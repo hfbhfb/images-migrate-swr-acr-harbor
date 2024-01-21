@@ -3,11 +3,12 @@ package pkg
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
-	"github.com/aliyun/alibaba-cloud-sdk-go/services/cr"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
+	"github.com/aliyun/alibaba-cloud-sdk-go/services/cr"
 )
 
 type Repos struct {
@@ -27,6 +28,7 @@ type RespStruct struct {
 type Auth struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Insecure bool   `json:"insecure"` // https://pkg.go.dev/github.com/cndoit18/image-syncer#section-readme
 }
 
 func GenAuthFile(authFile string, c *Config) error {
@@ -111,4 +113,26 @@ func WriteFile(fileName string, m map[string]interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func LoadFile(fileName string) (error, map[string]string) {
+
+	file, err := os.Open(fileName)
+	if err != nil {
+		return err, nil
+	}
+	defer file.Close()
+
+	m := make(map[string]string)
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&m)
+	if err != nil {
+		fmt.Println("Error decoding JSON:", err)
+		return nil, nil
+	}
+
+	// Access the map[string]string
+	fmt.Println("Decoded map:", m)
+
+	return nil, m
 }

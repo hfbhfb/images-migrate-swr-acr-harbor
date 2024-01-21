@@ -1,0 +1,89 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: tralateimg
+  name: tralateimg
+spec:
+  replicas: 1
+  serviceName: tralateimg
+  selector:
+    matchLabels:
+      app: tralateimg
+  template:
+    metadata:
+      labels:
+        app: tralateimg
+    spec:
+      containers:
+      - name: tralateimg
+        image: swr.cn-north-4.myhuaweicloud.com/hfbbg4/images-migrate-linux-amd64:v0.2 #这个镜像有ps命令
+        # image: hefabao/mygrace:0.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: 12Mi
+            cpu: 12m
+          limits:
+            memory: 2000Mi
+            cpu: 1000m
+        volumeMounts:
+          - name: tralateimg
+            mountPath: /config.yaml
+            subPath: config.yaml
+          - name: host-etc-hosts
+            mountPath: /etc/hosts
+      volumes:
+        - name: host-etc-hosts
+          hostPath:
+            path: /etc/hosts
+        - name: tralateimg
+          configMap:
+            name: tralateimg
+      terminationGracePeriodSeconds: 30 # 优雅退出时间,默认为30秒
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tralateimg
+data:
+  config.yaml: |-
+    from_harbor_flag: true
+    from_harbor_url: myharbor1.com:32443
+    from_harbor_user: admin
+    from_harbor_passwd: Harbor12345
+
+    to_harbor_flag: true
+    to_harbor_url: myharbor1.com:32443
+    to_harbor_user: user1
+    to_harbor_passwd: user1AAA
+
+    auto_create_to_flag: true  # 自动创建组织项目
+    # transition_registry: registry:5000  #当源from，目to完全一样的域名时，需要使用中转registry（一般情况是同集群甚至同节点）
+    transition_registry: 192.168.255.246:32005  
+
+
+    # dry_run: true  # 不实际执行，只打印需要创建哪些 （组织，命名空间，项目） 和 上传哪些镜像
+
+    # loop_gap: 30m15s #默认是在容器化中执行：默认从不再执行，保留日志，0s自动退出（二进制运行时）
+    # loop_gap: 15s 
+    # loop_gap: 0s 
+
+    #不配置 opt_map 时，则默认
+    opt_map:
+    - action: drop
+      regex: (t1/.*) #过滤掉自己原本的
+    - action: drop
+      regex: (t2/.*) #过滤掉自己原本的
+    # - action: drop
+    #   regex: (group3/.*)
+    # - action: keep
+    #   regex: (.*)
+    # - action: keep
+    #   regex: (.*myfilter.*)
+    - action: replacement # 默认只替换组织
+      regex: (.*)
+      replacement: t2/$1  # 所有（组织，命名空间，项目）增加一层t1

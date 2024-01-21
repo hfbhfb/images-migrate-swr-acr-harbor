@@ -1,0 +1,47 @@
+
+
+from_ali_flag: true
+from_ali_access_key: xxx
+from_ali_secret_key: xxx
+from_ali_region: cn-hangzhou
+from_ali_docker_user: xxx
+from_ali_docker_passwd: xxx
+
+
+
+# from_harbor_flag: true
+# from_harbor_url: myharbor1.com:32443
+# from_harbor_user: admin
+# from_harbor_passwd: Harbor12345
+
+to_harbor_flag: true
+to_harbor_url: myharbor1.com:32443
+to_harbor_user: user1
+to_harbor_passwd: user1AAA
+
+auto_create_to_flag: true  # 自动创建组织项目
+# transition_registry: registry:5000  #当源from，目to完全一样的域名时，需要使用中转registry（一般情况是同集群甚至同节点）
+transition_registry: 192.168.255.246:32005  
+
+
+# dry_run: true  # 不实际执行，只打印需要创建哪些 （组织，命名空间，项目） 和 上传哪些镜像
+
+# loop_gap: 30m15s #默认是在容器化中执行：默认从不再执行，保留日志，0s自动退出（二进制运行时）
+# loop_gap: 15s 
+# loop_gap: 0s 
+
+#不配置 opt_map 时，则默认
+opt_map:
+- action: drop
+  regex: (t1/.*) #过滤掉自己原本的
+- action: drop
+  regex: (t2/.*) #过滤掉自己原本的
+# - action: drop
+#   regex: (group3/.*)
+# - action: keep
+#   regex: (.*)
+# - action: keep
+#   regex: (.*myfilter.*)
+- action: replacement # 默认只替换组织
+  regex: (.*)
+  replacement: t3/$1  # 所有（组织，命名空间，项目）增加一层t1

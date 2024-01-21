@@ -1,3 +1,10 @@
 .idea
 config.yaml
 images-migrate-linux-amd64
+test
+gowatch.yml
+app
+imagesStep1.json
+imagesStep2.json
+step1auth.json
+step2auth.json
