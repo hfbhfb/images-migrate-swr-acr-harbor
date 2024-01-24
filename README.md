@@ -121,4 +121,8 @@ opt_map:
 - Doesn't rely on Docker daemon or other programs
 
 
+## 公有云区域信息
+- region_hw: "cn-south-1" # 华为云区域  https://developer.huaweicloud.com/endpoint?SWR
+
+- region_ali: "cn-hangzhou" # 阿里云区域 https://help.aliyun.com/document_detail/198107.html
 
