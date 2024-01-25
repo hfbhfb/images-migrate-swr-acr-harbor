@@ -1,5 +1,5 @@
 
-IMGTAG:=swr.cn-north-4.myhuaweicloud.com/hfbbg4/images-migrate-linux-amd64:v0.2
+IMGTAG:=swr.cn-north-4.myhuaweicloud.com/hfbbg4/images-migrate-linux-amd64:v0.3
 
 build:
 	@echo "编译和运行镜像迁移工具:支持华为云，阿里云，Harbor"
